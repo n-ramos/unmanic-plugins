@@ -26,7 +26,7 @@ def multi_part_upload_with_s3(basename, bucket_name, endpoint_url, access_key, s
     split_file_out = basename.split('.')
     basename = "{}.{}".format(split_file_out[0], 'mp4')
 
-    file_path = '/compiled/' + basename
+    file_path = '/compiled/library/' + basename
     s3 = boto3.client(
         's3',
         use_ssl=True,
