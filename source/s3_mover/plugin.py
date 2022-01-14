@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
+import re
 
 import boto3
 from boto3.s3.transfer import TransferConfig
@@ -22,8 +22,9 @@ class Settings(PluginSettings):
 
 
 def multi_part_upload_with_s3(basename, bucket_name, endpoint_url, access_key, secret_key):
+    basename = re.sub('[.mkv|.avi]', '.mp4', basename, flags=re.IGNORECASE)
 
-    file_path = '/library/' + basename
+    file_path = '/compiled/' + basename
     s3 = boto3.client(
         's3',
         use_ssl=True,
