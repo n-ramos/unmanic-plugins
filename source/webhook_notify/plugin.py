@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+import json
 import logging
 import os
+
+import PTN
 import requests
 
 from unmanic.libs.unplugins.settings import PluginSettings
+from tmdbv3api import TMDb, Search
 
 # Configure plugin logger
 logger = logging.getLogger("Unmanic.Plugin.webhook_notify")
@@ -15,10 +18,11 @@ class Settings(PluginSettings):
     settings = {
         "Url Address": "",
         "HTTP Method": "POST",
+        "Tmdb API key": ""
     }
     form_settings = {
         "HTTP Method": {
-            "input_type":     "select",
+            "input_type": "select",
             "select_options": [
                 {
                     "value": 'GET',
@@ -30,32 +34,46 @@ class Settings(PluginSettings):
                 },
 
             ],
-            "label":  "Http Request Method",
+            "label": "Http Request Method",
         }
     }
-def notify(url, method):
-    if method == "POST" :
-        result = requests.post(url, json={"pipeline_processed": True})
+
+
+def notify(url, method, data):
+    if method == "POST":
+        json_object = json.dumps(data, indent=4)
+        result = requests.post(url, json={"pipeline_processed": True, "infos": json_object})
     else:
         result = requests.get(url)
 
+
+def get_tmdb_information(title):
+    settings = Settings()
+    tmdb = TMDb()
+    tmdb.api_key = settings.get_setting("Tmdb API key")
+    search = Search()
+    tmdb.language = 'fr'
+    results = search.movies({"query": title})
+    return results[0]
+
+
+def format_notification_body(basename, tmdb_info):
+    return {
+        "basename": basename,
+        "tdmb_name": tmdb_info.get('original_title'),
+        "tmdb_id": tmdb_info.get('id')
+    }
+
+
 def on_postprocessor_task_results(data):
-    """
-    Runner function - provides a means for additional postprocessor functions based on the task success.
-
-    The 'data' object argument includes:
-        task_processing_success         - Boolean, did all task processes complete successfully.
-        file_move_processes_success     - Boolean, did all postprocessor movement tasks complete successfully.
-        destination_files               - List containing all file paths created by postprocessor file movements.
-        source_data                     - Dictionary containing data pertaining to the original source file.
-
-    :param data:
-    :return:
-    
-    """
     settings = Settings()
 
-    if  data.get('task_processing_success'):
-        notify(settings.get_setting("Url Address"), settings.get_setting("HTTP Method"))
+    if data.get('task_processing_success'):
+        source_data = data.get('source_data')
+        file_name = source_data.get('basename')
+        torrent_parsed = PTN.parse(file_name)
+        tmdb_info = get_tmdb_information(torrent_parsed.get('title'))
+        notify(settings.get_setting("Url Address"), settings.get_setting("HTTP Method"),
+               format_notification_body(file_name, tmdb_info))
 
     return data
