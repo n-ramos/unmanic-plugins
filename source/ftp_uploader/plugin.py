@@ -33,9 +33,11 @@ def upload_to_ftp_server(filename):
     ftp.connect(settings.get_setting('Ftp Host'), int(settings.get_setting('Ftp Port')))
     ftp.login(settings.get_setting('Ftp Username'), settings.get_setting('Ftp Password'))
     ftp.prot_p()
-    source_filename = "{}.{}".format(filename.split('.')[0], 'mp4')
+    splited_filename = os.path.splitext(settings.get_setting('Source Folder') + '/' + filename)
+    source_filename = "{}.{}".format(splited_filename[0], 'mp4')
     logger.info("Upload file to ftp server: " + source_filename)
-    file = open(settings.get_setting('Source Folder') + '/' + source_filename, 'rb')  # file to send
+
+    file = open(source_filename, 'rb')  # file to send
     ftp.cwd(settings.get_setting('Destination folder'))
     ftp.storbinary('STOR ' + source_filename, file)  # send the file
     logger.info("File uploaded successfully")
