@@ -36,15 +36,15 @@ def upload_to_ftp_server(filename):
     splited_filename = os.path.splitext(settings.get_setting('Source Folder') + '/' + filename)
     source_filename = "{}.{}".format(splited_filename[0], 'mp4')
     logger.info("Upload file to ftp server: " + source_filename)
-
+    dest_filename = source_filename.replace(settings.get_setting('Source Folder') + '/', "")
     file = open(source_filename, 'rb')  # file to send
     ftp.cwd(settings.get_setting('Destination folder'))
-    ftp.storbinary('STOR ' + source_filename, file)  # send the file
+    ftp.storbinary('STOR ' + dest_filename, file)  # send the file
     logger.info("File uploaded successfully")
     file.close()  # close file and FTP
     ftp.quit()
     if settings.get_setting("Delete source file"):
-        os.remove(settings.get_setting('Source Folder') + '/' + source_filename)
+        os.remove(source_filename)
 
 
 
