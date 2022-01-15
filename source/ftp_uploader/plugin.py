@@ -19,15 +19,18 @@ class Settings(PluginSettings):
 
 
 def upload_to_ftp_server(filename):
+
     settings = Settings()
     ftp = ftplib.FTP_TLS()
     ftp.connect(settings.get_setting('Ftp Host'), int(settings.get_setting('Ftp Port')))
     ftp.login(settings.get_setting('Ftp Username'), settings.get_setting('Ftp Password'))
     ftp.prot_p()
     source_filename = "{}.{}".format(filename.split('.')[0], 'mp4')
+    logger.info("Upload file to ftp server: " + source_filename)
     file = open(settings.get_setting('Source Folder') + '/' + source_filename, 'rb')  # file to send
     ftp.cwd(settings.get_setting('Destination folder'))
-    ftp.storbinary('STOR ' + filename, file)  # send the file
+    ftp.storbinary('STOR ' + source_filename, file)  # send the file
+    logger.info("File uploaded successfully")
     file.close()  # close file and FTP
     ftp.quit()
 
