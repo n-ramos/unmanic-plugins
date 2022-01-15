@@ -15,11 +15,18 @@ class Settings(PluginSettings):
                 "Ftp Username": "",
                 "Ftp Password": "",
                 "Source Folder": "",
+                "Delete source file": True,
                 "Destination folder": "/files"}
+
+    def __init__(self):
+        self.form_settings = {
+            "Delete source file": {
+                "label": "Delete source file",
+            }
+        }
 
 
 def upload_to_ftp_server(filename):
-
     settings = Settings()
     ftp = ftplib.FTP_TLS()
     ftp.connect(settings.get_setting('Ftp Host'), int(settings.get_setting('Ftp Port')))
@@ -36,19 +43,6 @@ def upload_to_ftp_server(filename):
 
 
 def on_postprocessor_task_results(data):
-    """
-    Runner function - provides a means for additional postprocessor functions based on the task success.
-
-    The 'data' object argument includes:
-        task_processing_success         - Boolean, did all task processes complete successfully.
-        file_move_processes_success     - Boolean, did all postprocessor movement tasks complete successfully.
-        destination_files               - List containing all file paths created by postprocessor file movements.
-        source_data                     - Dictionary containing data pertaining to the original source file.
-
-    :param data:
-    :return:
-    
-    """
     if data.get('task_processing_success'):
         source_data = data.get('source_data')
         file_name = source_data.get('basename')
