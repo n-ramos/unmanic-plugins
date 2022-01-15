@@ -75,7 +75,7 @@ def on_postprocessor_task_results(data):
         file_name = source_data.get('basename')
         logger.info("Parse torrent name of " + file_name)
         torrent_parsed = PTN.parse(file_name)
-        logger.info("Torrent name parsed " + torrent_parsed)
+        logger.info("Torrent name parsed " + torrent_parsed.get('title'))
         tmdb_info = get_tmdb_information(torrent_parsed.get('title'))
         logger.info("Sending notification")
         notify(settings.get_setting("Url Address"), settings.get_setting("HTTP Method"),
