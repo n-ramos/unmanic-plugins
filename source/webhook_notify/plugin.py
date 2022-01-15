@@ -45,6 +45,7 @@ def notify(url, method, data):
         result = requests.post(url, json={"pipeline_processed": True, "infos": json_object})
     else:
         result = requests.get(url)
+    logger.info("Notification sended status code response: " + str(result.status_code))
 
 
 def get_tmdb_information(title):
@@ -53,6 +54,7 @@ def get_tmdb_information(title):
     tmdb.api_key = settings.get_setting("Tmdb API key")
     search = Search()
     tmdb.language = 'fr'
+    logger.info("Torrent name search " + title)
     results = search.movies({"query": title})
     return results[0]
 
@@ -71,8 +73,11 @@ def on_postprocessor_task_results(data):
     if data.get('task_processing_success'):
         source_data = data.get('source_data')
         file_name = source_data.get('basename')
+        logger.info("Parse torrent name of " + file_name)
         torrent_parsed = PTN.parse(file_name)
+        logger.info("Torrent name parsed " + torrent_parsed)
         tmdb_info = get_tmdb_information(torrent_parsed.get('title'))
+        logger.info("Sending notification")
         notify(settings.get_setting("Url Address"), settings.get_setting("HTTP Method"),
                format_notification_body(file_name, tmdb_info))
 
