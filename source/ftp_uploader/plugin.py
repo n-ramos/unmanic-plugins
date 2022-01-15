@@ -23,7 +23,7 @@ def upload_to_ftp_server(filename):
     ftp = ftplib.FTP_TLS()
     ftp.connect(settings.get_setting('Ftp Host'), int(settings.get_setting('Ftp Port')))
     ftp.login(settings.get_setting('Ftp Username'), settings.get_setting('Ftp Password'))
-    source_filename = "{}.{}".format(filename.split('.'), 'mp4')
+    source_filename = "{}.{}".format(filename.split('.')[0], 'mp4')
     file = open(settings.get_setting('Source Folder') + '/' + source_filename, 'rb')  # file to send
     ftp.cwd(settings.get_setting('Destination folder'))
     ftp.storbinary('STOR ' + filename, file)  # send the file
