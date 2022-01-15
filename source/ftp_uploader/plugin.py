@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import ftplib
 import logging
+import os
 
 from unmanic.libs.unplugins.settings import PluginSettings
 
@@ -40,6 +41,9 @@ def upload_to_ftp_server(filename):
     logger.info("File uploaded successfully")
     file.close()  # close file and FTP
     ftp.quit()
+    if settings.get_setting("Delete source file"):
+        os.remove(settings.get_setting('Source Folder') + '/' + source_filename)
+
 
 
 def on_postprocessor_task_results(data):
@@ -47,4 +51,5 @@ def on_postprocessor_task_results(data):
         source_data = data.get('source_data')
         file_name = source_data.get('basename')
         upload_to_ftp_server(file_name)
+
     return data
