@@ -59,11 +59,9 @@ def get_tmdb_information(title):
     return results[0]
 
 
-def format_notification_body(basename, tmdb_info):
+def format_notification_body(basename):
     return {
-        "basename": basename,
-        "tdmb_name": tmdb_info.get('original_title'),
-        "tmdb_id": tmdb_info.get('id')
+        "basename": basename
     }
 
 
@@ -73,12 +71,9 @@ def on_postprocessor_task_results(data):
     if data.get('task_processing_success'):
         source_data = data.get('source_data')
         file_name = source_data.get('basename')
-        logger.info("Parse torrent name of " + file_name)
-        torrent_parsed = PTN.parse(file_name)
-        logger.info("Torrent name parsed " + torrent_parsed.get('title'))
-        tmdb_info = get_tmdb_information(torrent_parsed.get('title'))
+
         logger.info("Sending notification")
         notify(settings.get_setting("Url Address"), settings.get_setting("HTTP Method"),
-               format_notification_body(file_name, tmdb_info))
+               format_notification_body(file_name))
 
     return data
