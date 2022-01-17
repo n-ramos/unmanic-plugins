@@ -29,10 +29,9 @@ class Settings(PluginSettings):
 
 def upload_to_ftp_server(filename):
     settings = Settings()
-    ftp = ftplib.FTP_TLS()
+    ftp = ftplib.FTP()
     ftp.connect(settings.get_setting('Ftp Host'), int(settings.get_setting('Ftp Port')))
     ftp.login(settings.get_setting('Ftp Username'), settings.get_setting('Ftp Password'))
-    ftp.prot_p()
     splited_filename = os.path.splitext(settings.get_setting('Source Folder') + '/' + filename)
     source_filename = "{}.{}".format(splited_filename[0], 'mp4')
     logger.info("Upload file to ftp server: " + source_filename)
