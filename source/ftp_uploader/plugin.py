@@ -46,6 +46,7 @@ def upload_to_ftp_server(filename):
     if settings.get_setting("Delete source file"):
         logger.info("Delete source file: " + source_filename)
         os.remove(source_filename)
+        os.remove(source_filename.replace(settings.get_setting('Source Folder') + '/', "/library/"))
 
 
 
