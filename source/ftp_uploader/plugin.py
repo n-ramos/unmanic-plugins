@@ -58,6 +58,7 @@ def upload_to_ftp_server(filename):
 def on_postprocessor_task_results(data):
     if data.get('task_processing_success'):
         source_data = data.get('source_data')
+        logger.info("Source data " + str(source_data))
         file_name = source_data.get('basename')
         upload_to_ftp_server(file_name)
 
