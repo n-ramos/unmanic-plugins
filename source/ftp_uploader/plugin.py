@@ -33,12 +33,13 @@ def upload_to_ftp_server(filename):
     ftp = ftplib.FTP()
     ftp.connect(settings.get_setting('Ftp Host'), int(settings.get_setting('Ftp Port')))
     ftp.login(settings.get_setting('Ftp Username'), settings.get_setting('Ftp Password'))
-    splited_filename = os.path.splitext(settings.get_setting('Source Folder') + '/' + filename)
-    logger.info("Splited name: " + settings.get_setting('Source Folder') + '/' + filename)
-    source_filename = "{}.{}".format(splited_filename[0], 'mp4')
 
-    dest_filename = source_filename.replace(settings.get_setting('Source Folder') + '/', "")
-    dest_filename = PTN.parse(dest_filename).get('title')
+    basename = os.path.basename(filename)
+    basename_splitted = os.path.splitext(basename)
+    basename_mp4 = "{}.{}".format(basename_splitted[0], 'mp4')
+    foldername_mp4 = os.path.dirname(filename)
+    source_filename = foldername_mp4 + "/" + basename_mp4
+    dest_filename = PTN.parse(basename_splitted[0]).get('title')
     dest_filename = dest_filename.replace(".", "")
     dest_filename = dest_filename + ".mp4"
 
@@ -58,8 +59,8 @@ def upload_to_ftp_server(filename):
 def on_postprocessor_task_results(data):
     if data.get('task_processing_success'):
         source_data = data.get('source_data')
-        logger.info("Source data " + str(source_data))
-        file_name = source_data.get('basename')
-        upload_to_ftp_server(file_name)
+
+        file_name = source_data.get('abspath')
+        upload_to_ftp_server("/compiled" + file_name)
 
     return data
