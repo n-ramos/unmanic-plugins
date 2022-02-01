@@ -48,9 +48,12 @@ def notify(url, method, data):
 
 
 def format_notification_body(basename):
+
     nomFichier = PTN.parse(basename)
+    nomToSend = nomFichier.get('title')
+    nomToSend = nomToSend.replace(".", "")
     return {
-        "basename": nomFichier.get('title') + ".mp4"
+        "basename": nomToSend + ".mp4"
     }
 
 
