@@ -34,6 +34,7 @@ def upload_to_ftp_server(filename):
     ftp.connect(settings.get_setting('Ftp Host'), int(settings.get_setting('Ftp Port')))
     ftp.login(settings.get_setting('Ftp Username'), settings.get_setting('Ftp Password'))
     splited_filename = os.path.splitext(settings.get_setting('Source Folder') + '/' + filename)
+    logger.info("Splited name: " + settings.get_setting('Source Folder') + '/' + filename)
     source_filename = "{}.{}".format(splited_filename[0], 'mp4')
 
     dest_filename = source_filename.replace(settings.get_setting('Source Folder') + '/', "")
