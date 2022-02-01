@@ -2,13 +2,12 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
-import os
 
 import PTN
 import requests
 
 from unmanic.libs.unplugins.settings import PluginSettings
-from tmdbv3api import TMDb, Search
+
 
 # Configure plugin logger
 logger = logging.getLogger("Unmanic.Plugin.webhook_notify")
@@ -48,20 +47,10 @@ def notify(url, method, data):
     logger.info("Notification sended status code response: " + str(result.status_code))
 
 
-def get_tmdb_information(title):
-    settings = Settings()
-    tmdb = TMDb()
-    tmdb.api_key = settings.get_setting("Tmdb API key")
-    search = Search()
-    tmdb.language = 'fr'
-    logger.info("Torrent name search " + title)
-    results = search.movies({"query": title})
-    return results[0]
-
-
 def format_notification_body(basename):
+    nomFichier = PTN.parse(basename)
     return {
-        "basename": basename
+        "basename": nomFichier.get('title') + ".mp4"
     }
 
 

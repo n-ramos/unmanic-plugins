@@ -3,6 +3,7 @@
 import ftplib
 import logging
 import os
+import PTN
 
 from unmanic.libs.unplugins.settings import PluginSettings
 
@@ -36,7 +37,7 @@ def upload_to_ftp_server(filename):
     source_filename = "{}.{}".format(splited_filename[0], 'mp4')
     logger.info("Upload file to ftp server: " + source_filename)
     dest_filename = source_filename.replace(settings.get_setting('Source Folder') + '/', "")
-    dest_filename = dest_filename.replace(" ", ".")
+    dest_filename = PTN.parse(dest_filename).get('title') + ".mp4"
     file = open(source_filename, 'rb')  # file to send
     ftp.cwd(settings.get_setting('Destination folder'))
     ftp.storbinary('STOR ' + dest_filename, file)  # send the file
@@ -47,7 +48,6 @@ def upload_to_ftp_server(filename):
         logger.info("Delete source file: " + source_filename)
         os.remove(source_filename)
         os.remove(source_filename.replace(settings.get_setting('Source Folder') + '/', "/library/"))
-
 
 
 def on_postprocessor_task_results(data):
