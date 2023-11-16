@@ -50,10 +50,18 @@ def notify(url, method, data):
 def format_notification_body(basename):
 
     nomFichier = PTN.parse(basename)
-    nomToSend = nomFichier.get('title')
-    nomToSend = nomToSend.replace(".", "")
+    dest_filename = nomFichier.get('title')
+
+    # Ajoute des informations sur la saison et l'épisode, si disponibles
+    if nomFichier.get('season') is not None and nomFichier.get('episode') is not None:
+        season = str(nomFichier.get('season')).zfill(2)  # Ajoute un zéro pour les nombres à un chiffre
+        episode = str(nomFichier.get('episode')).zfill(2)
+        dest_filename += f'S{season}E{episode}'
+
+    # Nettoie le nom du fichier et ajoute l'extension
+    dest_filename = dest_filename.replace(".", "") + ".mp4"
     return {
-        "basename": nomToSend + ".mp4"
+        "basename": dest_filename
     }
 
 

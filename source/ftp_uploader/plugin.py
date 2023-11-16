@@ -37,11 +37,19 @@ def upload_to_ftp_server(filename):
     basename = os.path.basename(filename)
     basename_splitted = os.path.splitext(basename)
     basename_mp4 = "{}.{}".format(basename_splitted[0], 'mp4')
+    parsedPtn = PTN.parse(basename_splitted[0])
     foldername_mp4 = os.path.dirname(filename)
     source_filename = foldername_mp4 + "/" + basename_mp4
-    dest_filename = PTN.parse(basename_splitted[0]).get('title')
-    dest_filename = dest_filename.replace(".", "")
-    dest_filename = dest_filename + ".mp4"
+    dest_filename = parsedPtn.get('title')
+
+    # Ajoute des informations sur la saison et l'épisode, si disponibles
+    if parsedPtn.get('season') is not None and parsedPtn.get('episode') is not None:
+        season = str(parsedPtn.get('season')).zfill(2)  # Ajoute un zéro pour les nombres à un chiffre
+        episode = str(parsedPtn.get('episode')).zfill(2)
+        dest_filename += f'S{season}E{episode}'
+
+    # Nettoie le nom du fichier et ajoute l'extension
+    dest_filename = dest_filename.replace(".", "") + ".mp4"
 
     logger.info("Upload file to ftp server source : " + source_filename + " destination file: " + dest_filename)
     file = open(source_filename, 'rb')  # file to send
